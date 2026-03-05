@@ -1,0 +1,31 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# ML models cache
+*.pkl
+*.joblib
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+
+# Environment variables
+.env
+
+# Upload folder
+uploads/
+
+# IDE
+.vscode/
+.idea/
