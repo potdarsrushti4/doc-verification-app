@@ -6,10 +6,6 @@ __pycache__/
 *.pyd
 *.log
 
-# ML models cache
-*.pkl
-*.joblib
-
 # OS
 .DS_Store
 Thumbs.db
