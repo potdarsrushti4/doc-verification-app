@@ -29,9 +29,9 @@ export default function Home() {
       formData.append("file", file);
 
       const response = await axios.post(
-        "doc-verification-app-production.up.railway.app",
-        formData
-      );
+  "https://doc-verification-app-production.up.railway.app/verify",
+  formData
+);
 
       setResult(response.data);
 
