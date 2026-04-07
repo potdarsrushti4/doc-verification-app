@@ -28,10 +28,11 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await axios.post(
-  "https://doc-verification-app.onrender.com/verify",
-  formData
-);
+      const API_URL = "https://doc-verification-app.onrender.com/verify";
+
+      console.log("API CALLING:", API_URL);
+
+      const response = await axios.post(API_URL, formData);
 
       setResult(response.data);
 
