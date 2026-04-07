@@ -9,6 +9,10 @@ from verification import extract_text, extract_nlp_features, extract_ela_feature
 
 app = FastAPI()
 
+@app.get("/")
+def home():
+    return {"message": "Document Verification API is running"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
