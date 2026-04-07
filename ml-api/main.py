@@ -68,14 +68,14 @@ async def verify(file: UploadFile = File(...)):
     # combine features
     combined_features = hstack([text_vector, scaled_handcrafted])
 
-    # NLP probability
-    nlp_prob = nlp_model.predict_proba(combined_features)[0][1]
+    # NLP prediction
+    nlp_prediction = nlp_model.predict(combined_features)[0]
+    nlp_prob = float(nlp_prediction)
 
-    # ELA features + probability
-    ela_features = extract_ela_features(file_path)
+    # ELA prediction
     ela_prob = ela_model.predict_proba(ela_features)[0][1]
 
-    # Final score (ensemble)
+    # Combine
     final_score = 0.6 * ela_prob + 0.4 * nlp_prob
 
     # Decision logic
