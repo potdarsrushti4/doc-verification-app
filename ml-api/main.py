@@ -41,13 +41,12 @@ async def verify(file: UploadFile = File(...)):
     # NLP features
     nlp_features = extract_nlp_features(text)
 
-    # Convert extracted NLP features to numeric format
     from scipy.sparse import hstack
 
-# TF-IDF features
+    # TF-IDF features
     text_vector = vectorizer.transform([text])
 
-# handcrafted NLP features
+    # handcrafted NLP features
     handcrafted_features = np.array([[
         int(nlp_features["aadhaar_mentioned"]),
         int(nlp_features["passport_mentioned"]),
@@ -58,27 +57,29 @@ async def verify(file: UploadFile = File(...)):
         int(nlp_features["name"] is not None)
     ]])
 
-# scale ONLY handcrafted features
+    # scale handcrafted features
     scaled_handcrafted = scaler.transform(handcrafted_features)
 
-# combine TF-IDF + scaled handcrafted
+    # combine features
     combined_features = hstack([text_vector, scaled_handcrafted])
 
-# prediction
-    # Get probabilities
-nlp_prob = nlp_model.predict_proba(combined_features)[0][1]
-ela_prob = ela_model.predict_proba(ela_features)[0][1]
+    # NLP probability
+    nlp_prob = nlp_model.predict_proba(combined_features)[0][1]
 
-# Combine both (weighted)
-final_score = 0.6 * ela_prob + 0.4 * nlp_prob
+    # ELA features + probability
+    ela_features = extract_ela_features(file_path)
+    ela_prob = ela_model.predict_proba(ela_features)[0][1]
 
-# Decision logic
-if final_score > 0.75:
-    final_prediction = "Fake Document"
-elif final_score > 0.4:
-    final_prediction = "Suspicious Document"
-else:
-    final_prediction = "Authentic Document"
+    # Final score (ensemble)
+    final_score = 0.6 * ela_prob + 0.4 * nlp_prob
+
+    # Decision logic
+    if final_score > 0.75:
+        final_prediction = "Fake Document"
+    elif final_score > 0.4:
+        final_prediction = "Suspicious Document"
+    else:
+        final_prediction = "Authentic Document"
 
     result = {
         "status": final_prediction,
