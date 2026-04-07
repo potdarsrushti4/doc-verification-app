@@ -65,21 +65,24 @@ async def verify(file: UploadFile = File(...)):
     combined_features = hstack([text_vector, scaled_handcrafted])
 
 # prediction
-    nlp_prediction = nlp_model.predict(combined_features)[0]
+    # Get probabilities
+nlp_prob = nlp_model.predict_proba(combined_features)[0][1]
+ela_prob = ela_model.predict_proba(ela_features)[0][1]
 
-    # ELA features
-    ela_features = extract_ela_features(file_path)
-    ela_prediction = ela_model.predict(ela_features)[0]
+# Combine both (weighted)
+final_score = 0.6 * ela_prob + 0.4 * nlp_prob
 
-    # Simple ensemble logic
-    final_prediction = "Authentic"
-
-    if nlp_prediction == 1 or ela_prediction == 1:
-        final_prediction = "Fake"
+# Decision logic
+if final_score > 0.75:
+    final_prediction = "Fake Document"
+elif final_score > 0.4:
+    final_prediction = "Suspicious Document"
+else:
+    final_prediction = "Authentic Document"
 
     result = {
         "status": final_prediction,
-        "confidence": float(np.random.uniform(0.85, 0.95)),
+        "confidence": float(final_score),
         "name": nlp_features["name"],
         "dob": nlp_features["dob"],
         "document_type": "Detected Document"
